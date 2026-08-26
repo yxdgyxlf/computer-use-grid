@@ -1,0 +1,20 @@
+{
+  "_说明": "坐标台账示例。坐标 = 截图像素坐标（计算机截图的像素空间，= 点击工具的坐标输入），绑定基准截图尺寸。窗口尺寸/DPI 变化后需重新校准。仅收录「实测命中」的坐标（落点与目标重合并经截图验证）；推算/换算值一律不入账。",
+  "example_app": {
+    "base_size": [1456, 869],
+    "grid_image": "grids/example_app_base_grid.png",
+    "coords": {
+      "menu_button": [1191, 25],
+      "search_box": [691, 134],
+      "send_button": [1388, 219],
+      "input_field": [711, 318]
+    }
+  },
+  "desktop": {
+    "base_size": [1456, 910],
+    "grid_image": "grids/desktop_base_grid.png",
+    "coords": {
+      "app_icon": [99, 800]
+    }
+  }
+}
