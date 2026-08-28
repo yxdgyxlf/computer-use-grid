@@ -8,8 +8,10 @@
 
 - 🎯 **网格叠层**：`overlay-grid.py` 给任意 computer_use 截图叠上透明网格（红主格 100px / 白细格 25px + 刻度数字），vision 模型读格子即可得到「截图像素坐标」——与 `coordinate` 输入同坐标系，零换算。
 - 🧭 **坐标台账**：`coords.json` 按应用记录**实测命中**的按钮坐标（落点 + 截图验证才入库，禁用推算值），同一窗口尺寸下一次校准、此后直接点。
+- 🎯 **点击对准校验环**：点击前 `move_cursor` 预置真实指针 + `get_cursor_position` 回读断言（P1）→ 点击（P2）→ capture_after + 结构断言验证（P3）；`diff-aim.py` 双帧像素比对（AIM_OK/MISS + delta 修正建议）。
 - 🔁 **Fallback 兜底**：台账未登记/窗口尺寸变化 → 网格法重新定位，校准后回写台账。
 - 🧠 **AX/DOM 优先**：判断页面内容（有没有视频/列表/筛选）先 grep 无障碍树，vision 只做兜底（Canvas、无 AX 界面）。
+- 🗑️ **删除铁律**：删除类操作走右键菜单 + 确认弹窗检测；精确全名匹配，禁止子串正则（误删事故教训）。
 
 ## 安装
 
@@ -60,7 +62,8 @@ computer-use-grid/
 ├── README.md               # 本文档
 ├── SKILL.md                # 技能/方法论手册（可直接作为 Agent skill 加载）
 ├── scripts/
-│   └── overlay-grid.py     # 网格叠层脚本（Pillow，单文件）
+│   ├── overlay-grid.py     # 网格叠层脚本（Pillow，单文件）
+│   └── diff-aim.py         # 双帧像素比对：质心 vs 目标，对准判定（纯 PIL，无额外依赖）
 ├── examples/
 │   └── coords.sample.json  # 坐标台账示例（策略与结构）
 └── references/
