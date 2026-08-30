@@ -1,0 +1,76 @@
+diff --git a/tools/computer_use/cua_backend.py b/tools/computer_use/cua_backend.py
+index 4982426ee..4c5d1afc1 100644
+--- a/tools/computer_use/cua_backend.py
++++ b/tools/computer_use/cua_backend.py
+@@ -66,6 +66,14 @@ logger = logging.getLogger(__name__)
+ 
+ _MISSING = object()
+ 
++# Capture 提速参数（B 方案，2026-08-31 实测基线：无参 som 22-64s → 限参 ≤5s）。
++# som/ax 分支需要完整可点按树，保留较多元素与深度；vision/CLI 回退分支
++# 建树后被丢弃（仅取图），元素数越小越快。
++_CU_TREE_MAX_ELEMENTS = 1200
++_CU_TREE_MAX_DEPTH = 15
++_CU_VISION_MAX_ELEMENTS = 400
++_CU_VISION_MAX_DEPTH = 12
++
+ 
+ def _mcp_field(obj, snake: str, camel: str, default=None):
+     """Read an MCP model field across the 1.x -> 2.x field rename.
+@@ -3358,6 +3366,8 @@ class CuaDriverBackend(ComputerUseBackend):
+                         "pid": self._active_pid,
+                         "window_id": self._active_window_id,
+                         "session": self._session_id,
++                        "max_elements": _CU_VISION_MAX_ELEMENTS,
++                        "max_depth": _CU_VISION_MAX_DEPTH,
+                     },
+                 )
+                 png_b64, image_mime_type = _image_from_tool_result(gws_out)
+@@ -3386,6 +3396,8 @@ class CuaDriverBackend(ComputerUseBackend):
+                             "pid": self._active_pid,
+                             "window_id": self._active_window_id,
+                             "session": self._session_id,
++                            "max_elements": _CU_VISION_MAX_ELEMENTS,
++                            "max_depth": _CU_VISION_MAX_DEPTH,
+                         },
+                         30.0,
+                     )
+@@ -3406,6 +3418,8 @@ class CuaDriverBackend(ComputerUseBackend):
+                     "pid": self._active_pid,
+                     "window_id": self._active_window_id,
+                     "session": self._session_id,
++                    "max_elements": _CU_TREE_MAX_ELEMENTS,
++                    "max_depth": _CU_TREE_MAX_DEPTH,
+                 },
+             )
+             # The persistent MCP session can return a degenerate result —
+@@ -3443,6 +3457,8 @@ class CuaDriverBackend(ComputerUseBackend):
+                             "pid": self._active_pid,
+                             "window_id": self._active_window_id,
+                             "session": self._session_id,
++                            "max_elements": _CU_TREE_MAX_ELEMENTS,
++                            "max_depth": _CU_TREE_MAX_DEPTH,
+                         },
+                         30.0,
+                     )
+diff --git a/tools/vision_tools.py b/tools/vision_tools.py
+index 337bc24d7..f108d4402 100644
+--- a/tools/vision_tools.py
++++ b/tools/vision_tools.py
+@@ -1598,6 +1598,16 @@ async def vision_analyze_tool(
+             "temperature": vision_temperature,
+             "timeout": vision_timeout,
+         }
++        # Optional output cap (auxiliary.vision.max_tokens in config.yaml):
++        # without it, Doubao-Seed-Evolving writes long free-form analyses
++        # (26.5s at 3282 chars, 180s+ on extreme runs, measured 2026-08-31).
++        _vmax: Optional[float] = None
++        try:
++            _vmax = _vision_cfg.get("max_tokens")
++        except NameError:
++            _vmax = None
++        if _vmax is not None:
++            call_kwargs["max_tokens"] = int(_vmax)
+         if model:
+             call_kwargs["model"] = model
+         _load_auxiliary_client()
