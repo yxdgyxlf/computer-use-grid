@@ -1,5 +1,7 @@
 # computer-use-grid
 
+[English](README.en.md) | 中文
+
 解决 AI 桌面操作（computer_use）**高 DPI 下坐标漂移**的工程方案：**截图网格叠层 + 实测坐标校准 + 坐标台账**。
 
 > 核心主张：Windows 高缩放（125%/150%/175%/200%）下，截图、UIA、点击 API 各用一套坐标系且不告诉你用哪套——**任何理论换算都会错；实测校准才是自愈的**。
@@ -59,7 +61,8 @@ computer_use click coordinate=[x, y] capture_after=true
 
 ```
 computer-use-grid/
-├── README.md               # 本文档
+├── README.md               # 本文档（中文）
+├── README.en.md            # English version
 ├── SKILL.md                # 技能/方法论手册（可直接作为 Agent skill 加载）
 ├── scripts/
 │   ├── overlay-grid.py     # 网格叠层脚本（Pillow，单文件）
